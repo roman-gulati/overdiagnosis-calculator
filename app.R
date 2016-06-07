@@ -17,7 +17,7 @@ Sidebar <- dashboardSidebar(width=250,
                menuItem('Home', tabName='home'),
                menuItem('Trial setting', tabName='trial'),
                menuItem('Population setting', tabName='population'),
-               menuItem('Documentation', tabName='documentation')))
+               menuItem('Help', tabName='help')))
 
 Body <- dashboardBody(
            tags$head(tags$style(HTML('
@@ -41,10 +41,8 @@ Body <- dashboardBody(
                      box(width=12,
                          solidHeader=TRUE,
                          h1('Welcome!'),
-                         br(),
                          h4('The overdiagnosis calculator provides an interface to a deterministic model of the effects of screening on disease incidence in randomized trials and population studies.'),
-                         br(),
-                         h4('To get started, select the', strong('Trial setting'), 'or', strong('Population setting'), 'from the tabs on the left. There you can specify input parameters that control multiple aspects of the chosen disease setting and the effects of screening. In either setting, a figure illustrates disease incidence and responds to the input parameters in real time. When available, the first time point at which empirical estimates are unbiased will be shown in the figure. Additional information is available under the', strong('Documentation'), 'tab.'),
+                         h4('To get started, select the', strong('Trial setting'), 'or', strong('Population setting'), 'from the tabs on the left. There you can specify input parameters that control multiple aspects of the chosen disease setting and the effects of screening. In either setting, a figure illustrates disease incidence and reacts to changes to the input parameters in real time. When available, the first time point at which empirical estimates are unbiased will be shown in the figure. Additional information is available under the', strong('Help'), 'tab.'),
                          hr(),
                          h5('Questions or comments? Please email', a(href='mailto:rgulati@fredhutch.org', 'rgulati@fredhutch.org'))))),
            # Trial setting
@@ -149,12 +147,15 @@ Body <- dashboardBody(
                                        title='Disease incidence',
                                        solidHeader=TRUE,
                                        plotOutput('pop.plot'))))),
-           # Documentation
-           tabItem(tabName='documentation',
+           # Help
+           tabItem(tabName='help',
                    fluidRow(
                      box(width=12,
-                         h2('Documentation'),
-                         solidHeader=TRUE)))
+                         solidHeader=TRUE,
+                         h4('Conceptual details of the model are described here:'),
+                         p(em('Gulati R, Feuer EJ, Etzioni R. Conditions for unbiased empirical estimates of cancer overdiagnosis in randomized trials and population studies. Am J Epidemiol, in press.')),
+                         h4('An R package implementation of the model is available here:'),
+                         a(href='http://github.com/roman-gulati/overdiag', 'http://github.com/roman-gulati/overdiag'))))
                       ))
 
 ui <- dashboardPage(Header, Sidebar, Body, skin='green')
