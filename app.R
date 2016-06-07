@@ -9,7 +9,7 @@ library(ggplot2)
 library(shiny)
 library(shinydashboard)
 
-Header <- dashboardHeader(title='Overdiagnosis explorer',
+Header <- dashboardHeader(title='Overdiagnosis calculator',
                           titleWidth=250)
 
 Sidebar <- dashboardSidebar(width=250,
@@ -19,29 +19,43 @@ Sidebar <- dashboardSidebar(width=250,
                menuItem('Population setting', tabName='population'),
                menuItem('Documentation', tabName='documentation')))
 
-Body <- dashboardBody(tabItems(
+Body <- dashboardBody(
+           tags$head(tags$style(HTML('
+                                     .skin-green .main-sidebar {
+                                         background-color: #ffffff;
+                                     }
+                                     .skin-green .main-sidebar .sidebar .sidebar-menu .active a{
+                                         background-color: #008d4c;
+                                     }
+                                     .skin-green .main-sidebar .sidebar .sidebar-menu a{
+                                         background-color: #00a65a;
+                                     }
+                                     .content-wrapper,
+                                     .right-side {
+                                         background-color: #ffffff;
+                                     }'))),
+           tabItems(
            # Home page
            tabItem(tabName='home',
                    fluidRow(
                      box(width=12,
-                         h1('Overdiagnosis explorer'),
+                         solidHeader=TRUE,
+                         h1('Welcome!'),
                          br(),
-                         h4('Welcome! The overdiagnosis explorer provides an interface to a model of the effects of screening on disease incidence in randomized trials and population studies. You can control multiple aspects of either setting and use the projections to evaluate bias in empirical estimates of overdiagnosis and to determine the first time point at which empirical estimates are unbiased.'),
+                         h4('The overdiagnosis calculator provides an interface to a deterministic model of the effects of screening on disease incidence in randomized trials and population studies.'),
                          br(),
-                         h4('To get started, select the appropriate', strong('Trial setting'), 'or', strong('Population setting'), 'from the tabs on the left. Note that the', strong('Trial setting'), 'is divided into 3 design types:'),
-                         p(strong('Stop screening:'), 'screen arm stops screening after a fixed number of rounds and control arm receives no screens.'),
-                         p(strong('Continue screening:'), 'screen arm continues screening indefinitely and control arm receives no screens.'),
-                         p(strong('Delay screening:'), 'the screen arm continues screening indefinitely and control arm starts screening after a fixed delay.'),
-                         br(),
-                         h4('Additional information is available under the', strong('Documentation'), 'tab. For other questions or comments, please email', a(href='mailto:rgulati@fredhutch.org', 'rgulati@fredhutch.org'))))),
+                         h4('To get started, select the', strong('Trial setting'), 'or', strong('Population setting'), 'from the tabs on the left. There you can specify input parameters that control multiple aspects of the chosen disease setting and the effects of screening. In either setting, a figure illustrates disease incidence and responds to the input parameters in real time. When available, the first time point at which empirical estimates are unbiased will be shown in the figure. Additional information is available under the', strong('Documentation'), 'tab.'),
+                         hr(),
+                         h5('Questions or comments? Please email', a(href='mailto:rgulati@fredhutch.org', 'rgulati@fredhutch.org'))))),
            # Trial setting
            tabItem(tabName='trial',
                    fluidRow(
                             box(width=12,
-                                h2('Trial setting')),
+                                h2('Trial setting'),
+                                solidHeader=TRUE),
                             column(width=4,
                                    box(width=NULL,
-                                       title='Inputs',
+                                       title='Input parameters',
                                        solidHeader=TRUE,
                                        sliderInput('arm.size',
                                                    'Arm size:',
@@ -88,10 +102,11 @@ Body <- dashboardBody(tabItems(
            tabItem(tabName='population',
                    fluidRow(
                             box(width=12,
-                                h2('Population setting')),
+                                h2('Population setting'),
+                                solidHeader=TRUE),
                             column(width=4,
                                    box(width=NULL,
-                                       title='Inputs',
+                                       title='Input parameters',
                                        solidHeader=TRUE,
                                        sliderInput('pop.size',
                                                    'Population size:',
@@ -138,7 +153,8 @@ Body <- dashboardBody(tabItems(
            tabItem(tabName='documentation',
                    fluidRow(
                      box(width=12,
-                         h2('Documentation'))))
+                         h2('Documentation'),
+                         solidHeader=TRUE)))
                       ))
 
 ui <- dashboardPage(Header, Sidebar, Body, skin='green')
@@ -176,5 +192,5 @@ server <- function(input, output){
     })
 }
 
-print(shinyApp(ui, server))
+shinyApp(ui, server)
 
