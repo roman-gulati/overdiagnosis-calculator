@@ -97,7 +97,11 @@ Body <- dashboardBody(
                                    box(width=NULL,
                                        title='Disease incidence',
                                        solidHeader=TRUE,
-                                       plotOutput('trial.plot'))))),
+                                       plotOutput('trial.plot')),
+                                   box(width=NULL,
+                                       title='Save projections',
+                                       solidHeader=TRUE,
+                                       downloadButton('trial.data', 'Download'))))),
            # Population setting
            tabItem(tabName='population',
                    fluidRow(
@@ -150,7 +154,11 @@ Body <- dashboardBody(
                                    box(width=NULL,
                                        title='Disease incidence',
                                        solidHeader=TRUE,
-                                       plotOutput('pop.plot'))))),
+                                       plotOutput('pop.plot')),
+                                   box(width=NULL,
+                                       title='Save projections',
+                                       solidHeader=TRUE,
+                                       downloadButton('pop.data', 'Download'))))),
            # Help
            tabItem(tabName='help',
                    fluidRow(
@@ -166,8 +174,9 @@ ui <- dashboardPage(Header, Sidebar, Body, skin='green')
 
 server <- function(input, output){
     followup.years <- 30
-    output$trial.plot <- renderPlot({
-        tset <- trial_setting(arm.size=input$trial.size,
+    followup.output <- 20
+    tset <- reactive({
+        dset <- trial_setting(arm.size=input$trial.size,
                               onset.rate=input$trial.onset.rate,
                               sojourn.min=min(input$trial.sojourn.time),
                               sojourn.max=max(input$trial.sojourn.time),
@@ -175,26 +184,44 @@ server <- function(input, output){
                               overdiag.rate=input$trial.overdiag.rate,
                               screen.stop.year=input$trial.stop.year,
                               followup.years=followup.years)
-        print(trial_plot(tset))
+        dset <- subset(dset, year <= followup.output)
     })
-    output$pop.plot <- renderPlot({
+    mpset <- reactive({
         proportion <- as.numeric(unlist(strsplit(input$pop.proportion, ',')))
         start.year <- as.numeric(unlist(strsplit(input$pop.start.year, ',')))
         if(sum(proportion) < 1){
             proportion <- c(proportion, 1-sum(proportion))
             start.year <- c(start.year, followup.years-2)
         }
-        mpset <- multipopulation_setting(pop.size=input$pop.size,
-                                    onset.rate=input$pop.onset.rate,
-                                    sojourn.min=min(input$pop.sojourn.time),
-                                    sojourn.max=max(input$pop.sojourn.time),
-                                    sensitivity=input$pop.sensitivity,
-                                    overdiag.rate=input$pop.overdiag.rate,
-                                    proportion=proportion,
-                                    start.year=start.year,
-                                    followup.years=followup.years)
-        print(multipopulation_plot(mpset))
+        dset <- multipopulation_setting(pop.size=input$pop.size,
+                                        onset.rate=input$pop.onset.rate,
+                                        sojourn.min=min(input$pop.sojourn.time),
+                                        sojourn.max=max(input$pop.sojourn.time),
+                                        sensitivity=input$pop.sensitivity,
+                                        overdiag.rate=input$pop.overdiag.rate,
+                                        proportion=proportion,
+                                        start.year=start.year,
+                                        followup.years=followup.years)
+        dset <- subset(dset, year <= followup.output)
     })
+    output$trial.plot <- renderPlot({print(trial_plot(tset()))})
+    output$trial.data <- downloadHandler(filename <- 'trial_incidence.csv',
+                                         content <- function(filename){
+                                             write.csv(tset(),
+                                                       file=filename,
+                                                       quote=FALSE,
+                                                       row.names=FALSE)
+                                         },
+                                         contentType='text/csv')
+    output$pop.plot <- renderPlot({print(multipopulation_plot(mpset()))})
+    output$pop.data <- downloadHandler(filename <- 'population_incidence.csv',
+                                       content <- function(filename){
+                                           write.csv(mpset(),
+                                                     file=filename,
+                                                     quote=FALSE,
+                                                     row.names=FALSE)
+                                       },
+                                       contentType='text/csv')
 }
 
 shinyApp(ui, server)
