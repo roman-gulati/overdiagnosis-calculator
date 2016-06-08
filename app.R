@@ -52,12 +52,12 @@ Body <- dashboardBody(
                                 solidHeader=TRUE,
                                 p('In the',
                                   strong('Trial setting'),
-                                  'equal numbers of individuals are randomized to a screen or control arm. Latent disease onset occurs at a constant rate; the control arm receives no screen tests, so that control arm incidence matches the rate of onset. Sojourn time, or time between onset and diagnosis, follows a discrete uniform distribution. The screen arm begins screening in year 1. If the screen arm stops screening, the empirical difference between', em('cumulative incidence'), 'in the screen and control arm provides an unbiased estimate of overdiagnosis after screening stabilizes plus the maximum sojourn time. If the screen arm continues screening, the empirical difference between', em('annual incidence'), 'provides an unbiased estimate of overdiagnosis after screening stabilizes plus the maximum sojourn time.')),
+                                  'equal numbers of individuals are randomized to a screen or control arm. Latent disease onset occurs at a constant rate. The preclinical duration follows a uniform distribution. The control arm receives no screen tests, so control arm incidence matches the rate of onset. The screen arm begins screening in year 1. The empirical difference between screen and control arm incidence can provide an unbiased estimate of the number of overdiagnoses cases under 2 conditions. (1) The difference is based on', em('cumulative incidence'), 'if the screen arm stops screening and on', em('annual incidence'), 'if the screen arm continues screening. (2) The difference is calculated after screening stabilizes plus the maximum preclinical duration.')),
                             column(width=4,
                                    box(width=NULL,
                                        title='Input parameters',
                                        solidHeader=TRUE,
-                                       sliderInput('arm.size',
+                                       sliderInput('trial.size',
                                                    'Arm size:',
                                                    min=1000,
                                                    max=100000,
@@ -105,7 +105,7 @@ Body <- dashboardBody(
                                 solidHeader=TRUE,
                                 p('In the',
                                   strong('Population setting'),
-                                  'the population is infinite and latent disease onset occurs at a constant rate. Initially, before screening starts, the model projects disease incidence in steady state, so that diagnosis without screening matches the rate of onset. Sojourn time, or time between onset and diagnosis, follows a discrete uniform distribution. Annual screening begins in segments of the population at specified starting years. The empirical difference between annual incidence with and without screening provides an unbiased estimate of overdiagnosis after screening stabilizes plus the maximum sojourn time.')),
+                                  'latent disease onset occurs at a constant rate and the preclinical duration follows a uniform distribution. Initially, before screening starts, the model projects disease incidence in steady state, so that diagnosis without screening matches the rate of latent onset. Annual screening begins in segments of the population at specified starting years. The empirical difference between annual incidence with and without screening provides an unbiased estimate of overdiagnosis after screening stabilizes plus the maximum preclinical duration.')),
                             column(width=4,
                                    box(width=NULL,
                                        title='Input parameters',
@@ -159,7 +159,7 @@ Body <- dashboardBody(
                          h4('Conceptual details of the model are described here:'),
                          p(em('Gulati R, Feuer EJ, Etzioni R. Conditions for unbiased empirical estimates of cancer overdiagnosis in randomized trials and population studies. Am J Epidemiol, in press.')),
                          h4('An R package implementation of the model is available here:'),
-                         a(href='http://github.com/roman-gulati/overdiag', 'http://github.com/roman-gulati/overdiag'))))
+                         a(href='https://github.com/roman-gulati/overdiag', 'https://github.com/roman-gulati/overdiag'))))
                       ))
 
 ui <- dashboardPage(Header, Sidebar, Body, skin='green')
@@ -167,7 +167,7 @@ ui <- dashboardPage(Header, Sidebar, Body, skin='green')
 server <- function(input, output){
     followup.years <- 30
     output$trial.plot <- renderPlot({
-        tset <- trial_setting(arm.size=input$arm.size,
+        tset <- trial_setting(arm.size=input$trial.size,
                               onset.rate=input$trial.onset.rate,
                               sojourn.min=min(input$trial.sojourn.time),
                               sojourn.max=max(input$trial.sojourn.time),
