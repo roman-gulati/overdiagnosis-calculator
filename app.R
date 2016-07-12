@@ -171,7 +171,7 @@ Body <- dashboardBody(
                      box(width=12,
                          solidHeader=TRUE,
                          h4('Conceptual details of the model are described here:'),
-                         p(em('Gulati R, Feuer EJ, Etzioni R. Conditions for unbiased empirical estimates of cancer overdiagnosis in randomized trials and population studies. Am J Epidemiol, in press.')),
+                         a(href='http://www.ncbi.nlm.nih.gov/pubmed/27358266', 'Gulati R, Feuer EJ, Etzioni R. Conditions for unbiased empirical estimates of cancer overdiagnosis in randomized trials and population studies. Am J Epidemiol 2016. DOI: 10.1093/aje/kwv342'),
                          h4('An R package implementation of the model is available here:'),
                          a(href='https://github.com/roman-gulati/overdiag', 'https://github.com/roman-gulati/overdiag'))))
                       ))
